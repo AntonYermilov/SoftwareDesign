@@ -8,11 +8,22 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 public class UI {
-    void run(Stage stage, Messenger messenger) {
+    private TextArea response;
+
+    void setResponceText(String text) {
+        if (response.getText().length() != 0) {
+            response.setText(text + "\n" + response.getText());
+        } else {
+            response.setText(text);
+        }
+    }
+
+    void run(Stage stage, Sender sender) {
         //Creating a GridPane container
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
@@ -25,8 +36,8 @@ public class UI {
         msg.getText();
         GridPane.setConstraints(msg, 0, 0);
         grid.getChildren().add(msg);
-        final TextArea response = new TextArea();
-        messenger.setOut(response);
+        response = new TextArea();
+        sender.setOut(response);
         response.setPrefColumnCount(15);
         response.setPromptText("Response: ");
         GridPane.setConstraints(response, 0, 2);
@@ -38,7 +49,11 @@ public class UI {
 
             @Override
             public void handle(ActionEvent event) {
-                messenger.sendMessage(msg.getText());
+                try {
+                    sender.sendMessage(msg.getText());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
         Scene scene = new Scene(grid, 300, 500);

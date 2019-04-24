@@ -1,7 +1,5 @@
 package kirilenko.messenger;
 
-import java.io.IOException;
-
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -22,20 +20,20 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Messenger messenger;
+        Sender sender;
         try {
             String author = input_args[0];
             int port = Integer.parseInt(input_args[1]);
-            String peerAddress = input_args[2];
-            int peerPort = Integer.parseInt(input_args[3]);
-            messenger = new Messenger(author, port, peerAddress, peerPort);
+            String server_addr = input_args[2];
+            int server_port = Integer.parseInt(input_args[3]);
+            sender = new Sender(author, port, server_addr, server_port);
+            sender.create_connection();
         } catch (ArrayIndexOutOfBoundsException exception) {
             System.err.println("Please, provide four argument! \'author port connection_address connection_port\'");
             return;
-        } catch (IOException exception) {
-            System.err.println("Failed to bind.");
-            return;
         }
-        new UI().run(primaryStage, messenger);
+        UI ui = new UI();
+        ui.run(primaryStage, sender);
+        Receiver.main(ui);
     }
 }
